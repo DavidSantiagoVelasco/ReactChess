@@ -1,0 +1,15 @@
+.square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 69px;
+    height: 69px;
+}
+
+.white {
+    background-color: #ffffff;
+}
+
+.black {
+    background-color: #769656;
+}
