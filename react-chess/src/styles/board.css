@@ -1,0 +1,20 @@
+.board{
+    display: flex;
+    flex-wrap: wrap;
+    width: 552px;
+    height: 552px;
+    background-color: #2d7a31;
+}
+
+.square{
+    width: 69px;
+    height: 69px;
+}
+
+.white{
+    background-color: #ffffff;
+}
+
+.black{
+    background-color: #769656;
+}
