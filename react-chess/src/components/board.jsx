@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../styles/board.css";
+import Square from "./square";
 
 const columns = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
@@ -10,9 +11,7 @@ function Board() {
         for (const column of columns) {
             let type = isWhite ? "square white" : "square black";
             board.push(
-                <div key={`${column}${i}`} className={type}>
-                    [{`${column}${i}`}]
-                </div>
+                <Square key={`${column}${i}`} initialPosition={`${column}${i}`} className={type}></Square>
             );
             isWhite = !isWhite;
         }
