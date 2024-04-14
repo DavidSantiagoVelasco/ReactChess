@@ -1,0 +1,11 @@
+.piece {
+    width: 100px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: grab;
+}
+
+.piece:active {
+    cursor: grabbing;
+}
