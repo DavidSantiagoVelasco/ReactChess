@@ -2,7 +2,15 @@ import { useState } from "react";
 import "../styles/board.css";
 import Square from "./square";
 
+const TURNS = {
+    W: "w",
+    B: "b",
+};
+
 function Board() {
+    const [turn, setTurn] = useState(TURNS.W);
+    const [selectedSquare, setSelectedSquare] = useState(null);
+    const [possibleMovements, setPossibleMovements] = useState([]);
     const [board, setBoard] = useState({
         a8: ["rook_b", "white"],
         b8: ["knight_b", "black"],
@@ -69,8 +77,84 @@ function Board() {
         g1: ["knight_w", "black"],
         h1: ["rook_w", "white"],
     });
+
+    function clickSquare(e) {
+        const element = e.target;
+        if (selectedSquare) {
+            document
+                .getElementById(selectedSquare)
+                .classList.remove("selected");
+        }
+        const parent = element.parentNode;
+        const id = parent.id;
+        if (element.classList.contains("possibleMovement")) {
+            move(element.id);
+        }
+        for (let i = 0; i < possibleMovements.length; i++) {
+            document
+                .getElementById(possibleMovements[i])
+                .classList.remove("possibleMovement");
+        }
+        setSelectedSquare(id);
+        if (!element.classList.contains("piece")) {
+            return;
+        }
+        movements(id, element, parent);
+    }
+
+    function movements(square, element, parent) {
+        parent.classList.add("selected");
+        const piece = element.classList.item(1);
+        const pieceAndColor = piece.split("_");
+        if (turn !== pieceAndColor[1]) {
+            return;
+        }
+        if (pieceAndColor[0] === "pawn") {
+            if (pieceAndColor[1] === "b") {
+                if (square[1] === "7") {
+                    validatePossibleMovement(square[0] + 6);
+                    validatePossibleMovement(square[0] + 5);
+                } else {
+                    const row = parseInt(square[1]);
+                    validatePossibleMovement(square[0] + (row - 1));
+                }
+            } else {
+                if (square[1] === "2") {
+                    validatePossibleMovement(square[0] + 3);
+                    validatePossibleMovement(square[0] + 4);
+                } else {
+                    const row = parseInt(square[1]);
+                    validatePossibleMovement(square[0] + (row + 1));
+                }
+            }
+        }
+        setSelectedSquare(square);
+    }
+
+    function move(newSquare) {
+        const newBoard = { ...board };
+        const piece = newBoard[selectedSquare][0];
+        newBoard[newSquare][0] = piece;
+        newBoard[selectedSquare][0] = null;
+
+        setBoard(newBoard);
+        const newTurn = turn === TURNS.W ? TURNS.B : TURNS.W;
+        setTurn(newTurn);
+    }
+
+    function validatePossibleMovement(square) {
+        const childrens = document.getElementById(square).children;
+        if (childrens.length > 0) {
+            return;
+        }
+        document.getElementById(square).classList.add("possibleMovement");
+        const currentPossibleMovements = possibleMovements;
+        currentPossibleMovements.push(square);
+        setPossibleMovements(currentPossibleMovements);
+    }
+
     return (
-        <div className="board">
+        <div onClick={(e) => clickSquare(e)} className="board">
             {Object.entries(board).map(([square, piece]) => (
                 <Square
                     key={square}
