@@ -164,6 +164,29 @@ function Board() {
         setPossibleMovements(currentPossibleMovements);
     }
 
+    function validateMove(square, color, isCapture) {
+        if (isCapture) {
+            const childrens = document.getElementById(square).children;
+            if (childrens.length > 0) {
+                const pieceAndColor = childrens[0].classList.item(1).split("_");
+                return pieceAndColor[1] !== color;
+            }
+        } else {
+            const childrens = document.getElementById(square).children;
+            if (childrens.length === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function showSquareAsPossibleMovement(square) {
+        document.getElementById(square).classList.add("possibleMovement");
+        const currentPossibleMovements = possibleMovements;
+        currentPossibleMovements.push(square);
+        setPossibleMovements(currentPossibleMovements);
+    }
+
     function getAnotherSquare(sumColumn, sumRow, square) {
         let indexColumn = COLUMNS[square[0]];
         let indexRow = parseInt(square[1]);
