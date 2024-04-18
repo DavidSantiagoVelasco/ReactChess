@@ -7,6 +7,17 @@ const TURNS = {
     B: "b",
 };
 
+const COLUMNS = {
+    a: 0,
+    b: 1,
+    c: 2,
+    d: 3,
+    e: 4,
+    f: 5,
+    g: 6,
+    h: 7,
+};
+
 function Board() {
     const [turn, setTurn] = useState(TURNS.W);
     const [selectedSquare, setSelectedSquare] = useState(null);
@@ -151,6 +162,21 @@ function Board() {
         const currentPossibleMovements = possibleMovements;
         currentPossibleMovements.push(square);
         setPossibleMovements(currentPossibleMovements);
+    }
+
+    function getAnotherSquare(sumColumn, sumRow, square) {
+        let indexColumn = COLUMNS[square[0]];
+        let indexRow = parseInt(square[1]);
+        if (indexColumn + sumColumn > 7 || indexColumn + sumColumn < 0) {
+            return null;
+        }
+        if (indexRow + sumRow > 8 || indexRow + sumRow < 1) {
+            return null;
+        }
+        indexColumn += sumColumn;
+        let newColumn = Object.keys(COLUMNS).find((key) => COLUMNS[key] === indexColumn);
+        indexRow += sumRow;
+        return String(newColumn + indexRow);
     }
 
     return (
