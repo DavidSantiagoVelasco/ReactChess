@@ -92,9 +92,7 @@ function Board() {
     function clickSquare(e) {
         const element = e.target;
         if (selectedSquare) {
-            document
-                .getElementById(selectedSquare)
-                .classList.remove("selected");
+            document.getElementById(selectedSquare).classList.remove("selected");
         }
         const parent = element.parentNode;
         const id = parent.id;
@@ -102,9 +100,7 @@ function Board() {
             move(element.id);
         }
         for (let i = 0; i < possibleMovements.length; i++) {
-            document
-                .getElementById(possibleMovements[i])
-                .classList.remove("possibleMovement");
+            document.getElementById(possibleMovements[i]).classList.remove("possibleMovement");
         }
         setSelectedSquare(id);
         if (!element.classList.contains("piece")) {
@@ -120,25 +116,7 @@ function Board() {
         if (turn !== pieceAndColor[1]) {
             return;
         }
-        if (pieceAndColor[0] === "pawn") {
-            if (pieceAndColor[1] === "b") {
-                if (square[1] === "7") {
-                    validatePossibleMovement(square[0] + 6);
-                    validatePossibleMovement(square[0] + 5);
-                } else {
-                    const row = parseInt(square[1]);
-                    validatePossibleMovement(square[0] + (row - 1));
-                }
-            } else {
-                if (square[1] === "2") {
-                    validatePossibleMovement(square[0] + 3);
-                    validatePossibleMovement(square[0] + 4);
-                } else {
-                    const row = parseInt(square[1]);
-                    validatePossibleMovement(square[0] + (row + 1));
-                }
-            }
-        }
+        findMoves(piece, square);
         setSelectedSquare(square);
     }
 
@@ -153,7 +131,53 @@ function Board() {
         setTurn(newTurn);
     }
 
-    function validatePossibleMovement(square) {
+    function findMoves(piece, square) {
+        let validateSquare = square;
+        const pieceAndColor = piece.split("_");
+        switch (pieceAndColor[0]) {
+            case "pawn":
+                let whiteOrBlack = pieceAndColor[1] === "w" ? 1 : -1;
+                validateSquare = getAnotherSquare(-1, whiteOrBlack, square);
+                if (validateSquare) {
+                    if (validateMove(validateSquare, pieceAndColor[1], true)) {
+                        showSquareAsPossibleMovement(validateSquare);
+                    }
+                }
+                validateSquare = getAnotherSquare(1, whiteOrBlack, square);
+                if (validateSquare) {
+                    if (validateMove(validateSquare, pieceAndColor[1], true)) {
+                        showSquareAsPossibleMovement(validateSquare);
+                    }
+                }
+                if (whiteOrBlack === 1) {
+                    let increase = square[1] === "2" ? 2 : 1;
+                    for (let i = 1; i <= increase; i++) {
+                        validateSquare = getAnotherSquare(0, i, square);
+                        if (validateSquare) {
+                            if (validateMove(validateSquare, "w", false)) {
+                                showSquareAsPossibleMovement(validateSquare);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    let decrease = square[1] === "7" ? -2 : -1;
+                    for (let i = -1; i >= decrease; i--) {
+                        validateSquare = getAnotherSquare(0, i, square);
+                        if (validateSquare) {
+                            if (validateMove(validateSquare, "b", false)) {
+                                showSquareAsPossibleMovement(validateSquare);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
         const childrens = document.getElementById(square).children;
         if (childrens.length > 0) {
             return;
