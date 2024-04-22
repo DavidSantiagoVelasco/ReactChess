@@ -18,6 +18,13 @@ const COLUMNS = {
     h: 7,
 };
 
+const ACTIONS = {
+    A: "advance",
+    C: "capture",
+    F: "forward",
+    M: "anyMoves",
+};
+
 function Board() {
     const [turn, setTurn] = useState(TURNS.W);
     const [selectedSquare, setSelectedSquare] = useState(null);
@@ -88,7 +95,7 @@ function Board() {
         g1: ["knight_w", "black"],
         h1: ["rook_w", "white"],
     });
-
+    let blockedForward = false;
     function clickSquare(e) {
         const element = e.target;
         if (selectedSquare) {
@@ -139,13 +146,13 @@ function Board() {
                 let whiteOrBlack = pieceAndColor[1] === "w" ? 1 : -1;
                 validateSquare = getAnotherSquare(-1, whiteOrBlack, square);
                 if (validateSquare) {
-                    if (validateMove(validateSquare, pieceAndColor[1], true)) {
+                    if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
                         showSquareAsPossibleMovement(validateSquare);
                     }
                 }
                 validateSquare = getAnotherSquare(1, whiteOrBlack, square);
                 if (validateSquare) {
-                    if (validateMove(validateSquare, pieceAndColor[1], true)) {
+                    if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
                         showSquareAsPossibleMovement(validateSquare);
                     }
                 }
@@ -154,7 +161,7 @@ function Board() {
                     for (let i = 1; i <= increase; i++) {
                         validateSquare = getAnotherSquare(0, i, square);
                         if (validateSquare) {
-                            if (validateMove(validateSquare, "w", false)) {
+                            if (validateMove(validateSquare, "w", ACTIONS.A)) {
                                 showSquareAsPossibleMovement(validateSquare);
                             } else {
                                 break;
@@ -166,7 +173,7 @@ function Board() {
                     for (let i = -1; i >= decrease; i--) {
                         validateSquare = getAnotherSquare(0, i, square);
                         if (validateSquare) {
-                            if (validateMove(validateSquare, "b", false)) {
+                            if (validateMove(validateSquare, "b", ACTIONS.A)) {
                                 showSquareAsPossibleMovement(validateSquare);
                             } else {
                                 break;
@@ -188,18 +195,39 @@ function Board() {
         setPossibleMovements(currentPossibleMovements);
     }
 
-    function validateMove(square, color, isCapture) {
-        if (isCapture) {
-            const childrens = document.getElementById(square).children;
-            if (childrens.length > 0) {
-                const pieceAndColor = childrens[0].classList.item(1).split("_");
-                return pieceAndColor[1] !== color;
-            }
-        } else {
-            const childrens = document.getElementById(square).children;
-            if (childrens.length === 0) {
+    function validateMove(square, color, action) {
+        const childrens = document.getElementById(square).children;
+        const pieceAndColor = childrens[0].classList.item(1).split("_");
+        switch (action) {
+            case "anyMoves":
+                if (childrens.length > 0) {
+                    return pieceAndColor[1] !== color;
+                }
                 return true;
-            }
+            case "capture":
+                if (childrens.length > 0) {
+                    return pieceAndColor[1] !== color;
+                }
+                break;
+            case "advance":
+                if (childrens.length === 0) {
+                    return true;
+                }
+                break;
+            case "forward":
+                if (blockedForward) {
+                    blockedForward = false;
+                    return false;
+                }
+                if (childrens.length > 0) {
+                    if (pieceAndColor[1] !== color) {
+                        blockedForward = true;
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
         }
         return false;
     }
