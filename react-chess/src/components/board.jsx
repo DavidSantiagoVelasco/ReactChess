@@ -182,6 +182,30 @@ function Board() {
                     }
                 }
                 break;
+            case "bishop":
+                let variations = [
+                    [-1, 1],
+                    [1, 1],
+                    [-1, -1],
+                    [1, -1],
+                ];
+                for (const variation of variations) {
+                    for (let i = 1; i < 8; i++) {
+                        validateSquare = getAnotherSquare(
+                            i * variation[0],
+                            i * variation[1],
+                            square
+                        );
+                        if (validateSquare) {
+                            if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                                showSquareAsPossibleMovement(validateSquare);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
             default:
                 break;
         }
