@@ -197,7 +197,8 @@ function Board() {
 
     function validateMove(square, color, action) {
         const childrens = document.getElementById(square).children;
-        const pieceAndColor = childrens[0].classList.item(1).split("_");
+        const pieceAndColor =
+            childrens.length > 0 ? childrens[0].classList.item(1).split("_") : null;
         switch (action) {
             case "anyMoves":
                 if (childrens.length > 0) {
