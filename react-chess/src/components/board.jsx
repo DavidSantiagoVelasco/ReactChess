@@ -141,6 +141,7 @@ function Board() {
     function findMoves(piece, square) {
         let validateSquare = square;
         const pieceAndColor = piece.split("_");
+        let variations;
         switch (pieceAndColor[0]) {
             case "pawn":
                 let whiteOrBlack = pieceAndColor[1] === "w" ? 1 : -1;
@@ -182,8 +183,28 @@ function Board() {
                     }
                 }
                 break;
+            case "knight":
+                variations = [
+                    [-1, 2],
+                    [1, 2],
+                    [-2, -1],
+                    [-2, 1],
+                    [2, 1],
+                    [2, -1],
+                    [-1, -2],
+                    [1, -2],
+                ];
+                for (const variation of variations) {
+                    validateSquare = getAnotherSquare(variation[0], variation[1], square);
+                    if (validateSquare) {
+                        if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.M)) {
+                            showSquareAsPossibleMovement(validateSquare);
+                        }
+                    }
+                }
+                break;
             case "bishop":
-                let variations = [
+                variations = [
                     [-1, 1],
                     [1, 1],
                     [-1, -1],
