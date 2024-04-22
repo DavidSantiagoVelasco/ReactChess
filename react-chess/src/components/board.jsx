@@ -25,6 +25,9 @@ const ACTIONS = {
     M: "anyMoves",
 };
 
+let customMoves = [];
+let kingMoved = [false, false];
+
 function Board() {
     const [turn, setTurn] = useState(TURNS.W);
     const [selectedSquare, setSelectedSquare] = useState(null);
@@ -96,6 +99,7 @@ function Board() {
         h1: ["rook_w", "white"],
     });
     let blockedForward = false;
+
     function clickSquare(e) {
         const element = e.target;
         if (selectedSquare) {
@@ -109,6 +113,7 @@ function Board() {
         for (let i = 0; i < possibleMovements.length; i++) {
             document.getElementById(possibleMovements[i]).classList.remove("possibleMovement");
         }
+        customMoves = [];
         setSelectedSquare(id);
         if (!element.classList.contains("piece")) {
             return;
@@ -130,6 +135,27 @@ function Board() {
     function move(newSquare) {
         const newBoard = { ...board };
         const piece = newBoard[selectedSquare][0];
+        const pieceAndColor = piece.split("_");
+        if (pieceAndColor[0] === "king") {
+            for (const moves of customMoves) {
+                if (moves[1] === newSquare) {
+                    let newRookSquare = null,
+                        currentRookSquare = null;
+                    if (moves[0] === "queensideCastling") {
+                        newRookSquare = getAnotherSquare(-1, 0, selectedSquare);
+                        currentRookSquare = getAnotherSquare(-4, 0, selectedSquare);
+                    } else if (moves[0] === "kingsideCastling") {
+                        newRookSquare = getAnotherSquare(1, 0, selectedSquare);
+                        currentRookSquare = getAnotherSquare(3, 0, selectedSquare);
+                    }
+                    if (!newRookSquare || !currentRookSquare) return;
+                    const rook = newBoard[currentRookSquare][0];
+                    newBoard[newRookSquare][0] = rook;
+                    newBoard[currentRookSquare][0] = null;
+                }
+            }
+            pieceAndColor[1] === "w" ? (kingMoved[0] = true) : (kingMoved[1] = true);
+        }
         newBoard[newSquare][0] = piece;
         newBoard[selectedSquare][0] = null;
 
@@ -257,6 +283,7 @@ function Board() {
                         }
                     }
                 }
+                break;
             case "rook":
                 variations = [
                     [-1, 0],
@@ -283,6 +310,28 @@ function Board() {
                         }
                     }
                 }
+                break;
+            case "king":
+                variations = [
+                    [-1, 1],
+                    [0, 1],
+                    [1, 1],
+                    [1, -1],
+                    [0, -1],
+                    [-1, -1],
+                ];
+                for (const variation of variations) {
+                    validateSquare = getAnotherSquare(variation[0], variation[1], square);
+                    if (validateSquare) {
+                        if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                            showSquareAsPossibleMovement(validateSquare);
+                        }
+                    } else {
+                        blockedForward = false;
+                    }
+                }
+                findHorizontalMovesKing(pieceAndColor, square);
+                break;
             default:
                 break;
         }
@@ -332,6 +381,62 @@ function Board() {
                 return true;
         }
         return false;
+    }
+
+    function findHorizontalMovesKing(pieceAndColor, square) {
+        let index = pieceAndColor[1] === "w" ? 0 : 1;
+        for (let i = -1; i >= -4; i--) {
+            const validateSquare = getAnotherSquare(i, 0, square);
+            if (validateSquare) {
+                const childrens = document.getElementById(validateSquare).children;
+                if (childrens.length > 0) {
+                    if (i !== -4) {
+                        break;
+                    } else {
+                        const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
+                        if (
+                            pieceAndColorChildren[0] === "rook" &&
+                            pieceAndColorChildren[1] === pieceAndColor[1]
+                        ) {
+                            let castlingSquare = getAnotherSquare(-2, 0, square);
+                            showSquareAsPossibleMovement(castlingSquare);
+                            customMoves.push(["queensideCastling", castlingSquare]);
+                        }
+                    }
+                } else if (i === -1) {
+                    showSquareAsPossibleMovement(validateSquare);
+                }
+                if (kingMoved[index]) break;
+            } else {
+                break;
+            }
+        }
+        for (let i = 1; i <= 3; i++) {
+            const validateSquare = getAnotherSquare(i, 0, square);
+            if (validateSquare) {
+                const childrens = document.getElementById(validateSquare).children;
+                if (childrens.length > 0) {
+                    if (i !== 3) {
+                        break;
+                    } else {
+                        const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
+                        if (
+                            pieceAndColorChildren[0] === "rook" &&
+                            pieceAndColorChildren[1] === pieceAndColor[1]
+                        ) {
+                            let castlingSquare = getAnotherSquare(2, 0, square);
+                            showSquareAsPossibleMovement(castlingSquare);
+                            customMoves.push(["kingsideCastling", castlingSquare]);
+                        }
+                    }
+                } else if (i === 1) {
+                    showSquareAsPossibleMovement(validateSquare);
+                }
+                if (kingMoved[index]) break;
+            } else {
+                break;
+            }
+        }
     }
 
     function showSquareAsPossibleMovement(square) {
