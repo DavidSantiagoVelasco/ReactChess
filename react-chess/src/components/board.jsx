@@ -251,7 +251,33 @@ function Board() {
                             } else {
                                 break;
                             }
-                        } else { 
+                        } else {
+                            blockedForward = false;
+                            break;
+                        }
+                    }
+                }
+            case "rook":
+                variations = [
+                    [-1, 0],
+                    [0, 1],
+                    [1, 0],
+                    [0, -1],
+                ];
+                for (const variation of variations) {
+                    for (let i = 1; i < 8; i++) {
+                        validateSquare = getAnotherSquare(
+                            i * variation[0],
+                            i * variation[1],
+                            square
+                        );
+                        if (validateSquare) {
+                            if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                                showSquareAsPossibleMovement(validateSquare);
+                            } else {
+                                break;
+                            }
+                        } else {
                             blockedForward = false;
                             break;
                         }
