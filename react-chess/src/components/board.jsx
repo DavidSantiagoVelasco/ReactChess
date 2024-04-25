@@ -26,6 +26,7 @@ const ACTIONS = {
 };
 
 let customMoves = [];
+let possiblePassant = null;
 let kingMoved = [false, false];
 
 function Board() {
@@ -156,6 +157,33 @@ function Board() {
             }
             pieceAndColor[1] === "w" ? (kingMoved[0] = true) : (kingMoved[1] = true);
         }
+        if (pieceAndColor[0] !== "pawn") {
+            possiblePassant = null;
+        } else {
+            const rowDifference = Math.abs(parseInt(selectedSquare[1]) - parseInt(newSquare[1]));
+            if (rowDifference !== 2) {
+                const validateSquare1 = getAnotherSquare(-1, 0, selectedSquare);
+                const validateSquare2 = getAnotherSquare(1, 0, selectedSquare);
+                if (possiblePassant != null) {
+                    if (validateSquare1 === possiblePassant) {
+                        const sumRow = turn === TURNS.W ? 1 : -1;
+                        const validateNewSquare = getAnotherSquare(0, sumRow, validateSquare1);
+                        if (validateNewSquare === newSquare) {
+                            newBoard[validateSquare1][0] = null;
+                        }
+                    } else if (validateSquare2 === possiblePassant) {
+                        const sumRow = turn === TURNS.W ? 1 : -1;
+                        const validateNewSquare = getAnotherSquare(0, sumRow, validateSquare2);
+                        if (validateNewSquare === newSquare) {
+                            newBoard[validateSquare2][0] = null;
+                        }
+                    }
+                    possiblePassant = null;
+                }
+            } else {
+                possiblePassant = newSquare;
+            }
+        }
         newBoard[newSquare][0] = piece;
         newBoard[selectedSquare][0] = null;
 
@@ -208,6 +236,7 @@ function Board() {
                         }
                     }
                 }
+                validatePossiblePassant(square);
                 break;
             case "knight":
                 variations = [
@@ -436,6 +465,20 @@ function Board() {
             } else {
                 break;
             }
+        }
+    }
+
+    function validatePossiblePassant(square) {
+        if (!possiblePassant) {
+            return;
+        }
+        const validateSquare1 = getAnotherSquare(-1, 0, square);
+        const validateSquare2 = getAnotherSquare(1, 0, square);
+        let sumRow = turn === TURNS.W ? 1 : -1;
+        if (validateSquare1 === possiblePassant) {
+            showSquareAsPossibleMovement(getAnotherSquare(-1, sumRow, square));
+        } else if (validateSquare2 === possiblePassant) {
+            showSquareAsPossibleMovement(getAnotherSquare(1, sumRow, square));
         }
     }
 
