@@ -364,14 +364,6 @@ function Board() {
             default:
                 break;
         }
-        const childrens = document.getElementById(square).children;
-        if (childrens.length > 0) {
-            return;
-        }
-        document.getElementById(square).classList.add("possibleMovement");
-        const currentPossibleMovements = possibleMovements;
-        currentPossibleMovements.push(square);
-        setPossibleMovements(currentPossibleMovements);
     }
 
     function validateMove(square, color, action) {
