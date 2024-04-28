@@ -129,6 +129,18 @@ function Board() {
         if (turn !== pieceAndColor[1]) {
             return;
         }
+        const movements = findMoves(piece, square);
+        for (const move of movements) {
+            showSquareAsPossibleMovement(move);
+        }
+        setSelectedSquare(square);
+    }
+        parent.classList.add("selected");
+        const piece = element.classList.item(1);
+        const pieceAndColor = piece.split("_");
+        if (turn !== pieceAndColor[1]) {
+            return;
+        }
         findMoves(piece, square);
         setSelectedSquare(square);
     }
@@ -196,19 +208,17 @@ function Board() {
         let validateSquare = square;
         const pieceAndColor = piece.split("_");
         let variations;
+        let movements = [];
         switch (pieceAndColor[0]) {
             case "pawn":
                 let whiteOrBlack = pieceAndColor[1] === "w" ? 1 : -1;
-                validateSquare = getAnotherSquare(-1, whiteOrBlack, square);
-                if (validateSquare) {
-                    if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
-                        showSquareAsPossibleMovement(validateSquare);
-                    }
-                }
-                validateSquare = getAnotherSquare(1, whiteOrBlack, square);
-                if (validateSquare) {
-                    if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
-                        showSquareAsPossibleMovement(validateSquare);
+                variations = [-1, 1];
+                for (const variation of variations) {
+                    validateSquare = getAnotherSquare(variation, whiteOrBlack, square);
+                    if (validateSquare) {
+                        if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
+                            movements.push(validateSquare);
+                        }
                     }
                 }
                 if (whiteOrBlack === 1) {
@@ -217,7 +227,7 @@ function Board() {
                         validateSquare = getAnotherSquare(0, i, square);
                         if (validateSquare) {
                             if (validateMove(validateSquare, "w", ACTIONS.A)) {
-                                showSquareAsPossibleMovement(validateSquare);
+                                movements.push(validateSquare);
                             } else {
                                 break;
                             }
@@ -229,7 +239,7 @@ function Board() {
                         validateSquare = getAnotherSquare(0, i, square);
                         if (validateSquare) {
                             if (validateMove(validateSquare, "b", ACTIONS.A)) {
-                                showSquareAsPossibleMovement(validateSquare);
+                                movements.push(validateSquare);
                             } else {
                                 break;
                             }
@@ -253,7 +263,7 @@ function Board() {
                     validateSquare = getAnotherSquare(variation[0], variation[1], square);
                     if (validateSquare) {
                         if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.M)) {
-                            showSquareAsPossibleMovement(validateSquare);
+                            movements.push(validateSquare);
                         }
                     }
                 }
@@ -274,10 +284,13 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                showSquareAsPossibleMovement(validateSquare);
+                                movements.push(validateSquare);
                             } else {
                                 break;
                             }
+                        } else {
+                            blockedForward = false;
+                            break;
                         }
                     }
                 }
@@ -302,7 +315,7 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                showSquareAsPossibleMovement(validateSquare);
+                                movements.push(validateSquare);
                             } else {
                                 break;
                             }
@@ -329,7 +342,7 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                showSquareAsPossibleMovement(validateSquare);
+                                movements.push(validateSquare);
                             } else {
                                 break;
                             }
@@ -353,7 +366,7 @@ function Board() {
                     validateSquare = getAnotherSquare(variation[0], variation[1], square);
                     if (validateSquare) {
                         if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                            showSquareAsPossibleMovement(validateSquare);
+                            movements.push(validateSquare);
                         }
                     } else {
                         blockedForward = false;
@@ -364,6 +377,7 @@ function Board() {
             default:
                 break;
         }
+        return movements;
     }
 
     function validateMove(square, color, action) {
