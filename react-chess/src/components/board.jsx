@@ -129,7 +129,7 @@ function Board() {
         if (turn !== pieceAndColor[1]) {
             return;
         }
-        const movements = findMoves(piece, square);
+        const movements = findMoves(pieceAndColor, square);
         for (const move of movements) {
             showSquareAsPossibleMovement(move);
         }
@@ -204,9 +204,8 @@ function Board() {
         setTurn(newTurn);
     }
 
-    function findMoves(piece, square) {
+    function findMoves(pieceAndColor, square) {
         let validateSquare = square;
-        const pieceAndColor = piece.split("_");
         let variations;
         let movements = [];
         switch (pieceAndColor[0]) {
@@ -366,13 +365,18 @@ function Board() {
                     validateSquare = getAnotherSquare(variation[0], variation[1], square);
                     if (validateSquare) {
                         if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                            movements.push(validateSquare);
+                            if (!validateProtectedSquare(validateSquare, pieceAndColor)) {
+                                movements.push(validateSquare);
+                            }
                         }
                     } else {
                         blockedForward = false;
                     }
                 }
-                findHorizontalMovesKing(pieceAndColor, square);
+                let horizontalMovements = findHorizontalMovesKing(pieceAndColor, square);
+                for (const movement of horizontalMovements) {
+                    movements.push(movement);
+                }
                 break;
             default:
                 break;
@@ -420,6 +424,7 @@ function Board() {
 
     function findHorizontalMovesKing(pieceAndColor, square) {
         let index = pieceAndColor[1] === "w" ? 0 : 1;
+        let movements = [];
         for (let i = -1; i >= -4; i--) {
             const validateSquare = getAnotherSquare(i, 0, square);
             if (validateSquare) {
@@ -434,12 +439,19 @@ function Board() {
                             pieceAndColorChildren[1] === pieceAndColor[1]
                         ) {
                             let castlingSquare = getAnotherSquare(-2, 0, square);
-                            showSquareAsPossibleMovement(castlingSquare);
+                           movements.push(castlingSquare);
                             customMoves.push(["queensideCastling", castlingSquare]);
                         }
                     }
                 } else if (i === -1) {
-                    showSquareAsPossibleMovement(validateSquare);
+                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                        break;
+                    }
+                    movements.push(validateSquare);
+                } else {
+                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                        break;
+                    }
                 }
                 if (kingMoved[index]) break;
             } else {
@@ -460,18 +472,26 @@ function Board() {
                             pieceAndColorChildren[1] === pieceAndColor[1]
                         ) {
                             let castlingSquare = getAnotherSquare(2, 0, square);
-                            showSquareAsPossibleMovement(castlingSquare);
+                            movements.push(castlingSquare);
                             customMoves.push(["kingsideCastling", castlingSquare]);
                         }
                     }
                 } else if (i === 1) {
-                    showSquareAsPossibleMovement(validateSquare);
+                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                        break;
+                    }
+                    movements.push(validateSquare);
+                } else {
+                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                        break;
+                    }
                 }
                 if (kingMoved[index]) break;
             } else {
                 break;
             }
         }
+        return movements;
     }
 
     function validatePossiblePassant(square) {
@@ -510,6 +530,98 @@ function Board() {
         return String(newColumn + indexRow);
     }
 
+    function validateProtectedSquare(square, pieceAndColor) {
+        let diagonalVariations = [
+            [-1, 1],
+            [1, 1],
+            [1, -1],
+            [-1, -1],
+        ];
+        let linealVariation = [
+            [-1, 0],
+            [0, 1],
+            [1, 0],
+            [0, -1],
+        ];
+        for (const variation of linealVariation) {
+            for (let i = 1; i < 8; i++) {
+                const validateSquare = getAnotherSquare(i * variation[0], i * variation[1], square);
+                if (!validateSquare) {
+                    break;
+                }
+                const childrens = document.getElementById(validateSquare).children;
+                if (childrens.length === 0) {
+                    continue;
+                }
+                const newPieceAndColor = childrens[0].classList.item(1).split("_");
+                if (newPieceAndColor[1] === pieceAndColor[1]) {
+                    break;
+                }
+                if (newPieceAndColor[0] === "king" && pieceAndColor[0] === "king" && i === 1) {
+                    return true;
+                }
+                if (newPieceAndColor[0] === "rook" || newPieceAndColor[0] === "queen") {
+                    return true;
+                }
+                break;
+            }
+        }
+        let pawnControl = pieceAndColor[1] === "w" ? 1 : -1;
+        for (const variation of diagonalVariations) {
+            for (let i = 1; i < 8; i++) {
+                const validateSquare = getAnotherSquare(i * variation[0], i * variation[1], square);
+                if (!validateSquare) {
+                    break;
+                }
+                const childrens = document.getElementById(validateSquare).children;
+                if (childrens.length === 0) {
+                    continue;
+                }
+                const newPieceAndColor = childrens[0].classList.item(1).split("_");
+                if (newPieceAndColor[1] === pieceAndColor[1]) {
+                    break;
+                }
+                if (newPieceAndColor[0] === "king" && pieceAndColor[0] === "king" && i === 1) {
+                    return true;
+                }
+                if (i * variation[1] === pawnControl && newPieceAndColor[0] === "pawn") {
+                    return true;
+                }
+                if (newPieceAndColor[0] === "bishop" || newPieceAndColor[0] === "queen") {
+                    return true;
+                }
+                break;
+            }
+        }
+        let variations = [
+            [-1, 2],
+            [1, 2],
+            [-2, -1],
+            [-2, 1],
+            [2, 1],
+            [2, -1],
+            [-1, -2],
+            [1, -2],
+        ];
+        for (const variation of variations) {
+            const validateSquare = getAnotherSquare(variation[0], variation[1], square);
+            if (!validateSquare) {
+                continue;
+            }
+            const childrens = document.getElementById(validateSquare).children;
+            if (childrens.length === 0) {
+                continue;
+            }
+            const newPieceAndColor = childrens[0].classList.item(1).split("_");
+            if (newPieceAndColor[1] === pieceAndColor[1]) {
+                continue;
+            }
+            if (newPieceAndColor[0] === "knight") {
+                return true;
+            }
+        }
+        return false;
+    }
     return (
         <div onClick={(e) => clickSquare(e)} className="board">
             {Object.entries(board).map(([square, piece]) => (
