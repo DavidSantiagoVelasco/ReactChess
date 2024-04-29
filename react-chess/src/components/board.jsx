@@ -666,6 +666,51 @@ function Board() {
         }
         return pin;
     }
+
+    function validateVerticalPin(pieceAndColor, square) {
+        let i = 1;
+        let sum = 1;
+        let found = false;
+        let pin = false;
+        while (true) {
+            if (i > 7 || i < -7) {
+                break;
+            }
+            const validateSquare = getAnotherSquare(0, i, square);
+            if (!validateSquare) {
+                break;
+            }
+            const childrens = document.getElementById(validateSquare).children;
+            const newPieceAndColor =
+                childrens.length > 0 ? childrens[0].classList.item(1).split("_") : null;
+            if (!newPieceAndColor) {
+                i = i + sum;
+                continue;
+            }
+            if (newPieceAndColor[1] === pieceAndColor[1]) {
+                if (newPieceAndColor[0] !== "king") {
+                    break;
+                }
+                if (found) {
+                    pin = true;
+                    break;
+                }
+                found = true;
+                (i = -1), (sum = -1);
+            } else {
+                if (newPieceAndColor[0] === "queen" || newPieceAndColor[0] === "rook") {
+                    if (found) {
+                        pin = true;
+                        break;
+                    }
+                    found = true;
+                    (i = -1), (sum = -1);
+                }
+                break;
+            }
+        }
+        return pin;
+    }
     return (
         <div onClick={(e) => clickSquare(e)} className="board">
             {Object.entries(board).map(([square, piece]) => (
