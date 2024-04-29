@@ -135,15 +135,6 @@ function Board() {
         }
         setSelectedSquare(square);
     }
-        parent.classList.add("selected");
-        const piece = element.classList.item(1);
-        const pieceAndColor = piece.split("_");
-        if (turn !== pieceAndColor[1]) {
-            return;
-        }
-        findMoves(piece, square);
-        setSelectedSquare(square);
-    }
 
     function move(newSquare) {
         const newBoard = { ...board };
