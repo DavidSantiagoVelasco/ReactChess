@@ -206,35 +206,45 @@ function Board() {
                 for (const variation of variations) {
                     validateSquare = getAnotherSquare(variation, whiteOrBlack, square);
                     if (validateSquare) {
-                        if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
-                            movements.push(validateSquare);
+                        if (!validateMove(validateSquare, pieceAndColor[1], ACTIONS.C)) {
+                            continue;
                         }
+                        if (validateVerticalPin(pieceAndColor, square)) {
+                            continue;
+                        }
+                        if (validateHorizontalPin(pieceAndColor, square)) {
+                            continue;
+                        }
+                        if (
+                            (whiteOrBlack === 1 && variation === -1) ||
+                            (whiteOrBlack === -1 && variation === 1)
+                        ) {
+                            if (validateDiagonalRightPin(pieceAndColor, square)) {
+                                continue;
+                            }
+                        } else {
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) {
+                                continue;
+                            }
+                        }
+                        movements.push(validateSquare);
                     }
                 }
-                if (whiteOrBlack === 1) {
-                    let increase = square[1] === "2" ? 2 : 1;
-                    for (let i = 1; i <= increase; i++) {
-                        validateSquare = getAnotherSquare(0, i, square);
-                        if (validateSquare) {
-                            if (validateMove(validateSquare, "w", ACTIONS.A)) {
-                                movements.push(validateSquare);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    let decrease = square[1] === "7" ? -2 : -1;
-                    for (let i = -1; i >= decrease; i--) {
-                        validateSquare = getAnotherSquare(0, i, square);
-                        if (validateSquare) {
-                            if (validateMove(validateSquare, "b", ACTIONS.A)) {
-                                movements.push(validateSquare);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                let increase =
+                    (square[1] === "2" && whiteOrBlack === 1) ||
+                    (square[1] === "7" && whiteOrBlack === -1)
+                        ? 2
+                        : 1;
+                let i = 0;
+                while (Math.abs(i) < increase) {
+                    i = (Math.abs(i) + 1) * whiteOrBlack;
+                    validateSquare = getAnotherSquare(0, i, square);
+                    if (!validateSquare) break;
+                    if (!validateMove(validateSquare, pieceAndColor[1], ACTIONS.A)) break;
+                    if (validateHorizontalPin(pieceAndColor, square)) break;
+                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                    movements.push(validateSquare);
                 }
                 validatePossiblePassant(square);
                 break;
