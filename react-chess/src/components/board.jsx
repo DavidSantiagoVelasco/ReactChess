@@ -23,11 +23,13 @@ const ACTIONS = {
     C: "capture",
     F: "forward",
     M: "anyMoves",
+    V: "validateCheck",
 };
 
 let customMoves = [];
 let possiblePassant = null;
 let kingMoved = [false, false];
+let checkSquares = [];
 
 function Board() {
     const [turn, setTurn] = useState(TURNS.W);
@@ -419,6 +421,16 @@ function Board() {
                     }
                 }
                 return true;
+            case "validateCheck":
+                if (childrens.length > 0) {
+                    if (pieceAndColor[1] !== color) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
         }
         return false;
     }
@@ -615,6 +627,152 @@ function Board() {
         }
         return false;
     }
+
+    function validatePossibleCheck() {
+        const square = Object.entries(board).find(([square, piece]) => {
+            if (piece[0] !== null) {
+                const pieceAndColor = piece[0].split("_");
+                return pieceAndColor[0] === "king" && pieceAndColor[1] === turn;
+            }
+            return null;
+        });
+        if (square) {
+            findPossibleChecks(square[0]);
+        }
+    }
+
+    function findPossibleChecks(square) {
+        let variations = [
+            [-1, 0],
+            [0, 1],
+            [1, 0],
+            [0, -1],
+        ];
+        let breakCycle = false;
+        for (const variation of variations) {
+            if (breakCycle) {
+                break;
+            }
+            let tempCheckSquares = [];
+            for (let i = 1; i < 8; i++) {
+                const validateSquare = getAnotherSquare(i * variation[0], i * variation[1], square);
+                if (validateSquare) {
+                    if (validateMove(validateSquare, turn, ACTIONS.V)) {
+                        const piece = board[validateSquare][0];
+                        if (!piece) {
+                            tempCheckSquares.push(validateSquare);
+                            continue;
+                        }
+                        const pieceAndColor = piece.split("_");
+                        if (
+                            (pieceAndColor[0] === "queen" || pieceAndColor[0] === "rook") &&
+                            pieceAndColor[1] !== turn
+                        ) {
+                            tempCheckSquares.push(validateSquare);
+                            checkSquares.push(tempCheckSquares);
+                            setIsCheck(true);
+                            breakCycle = true;
+                            break;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    blockedForward = false;
+                    break;
+                }
+            }
+        }
+        variations = [
+            [-1, 1],
+            [1, 1],
+            [-1, -1],
+            [1, -1],
+        ];
+        breakCycle = false;
+        for (const variation of variations) {
+            if (breakCycle) {
+                break;
+            }
+            let tempCheckSquares = [];
+            for (let i = 1; i < 8; i++) {
+                const validateSquare = getAnotherSquare(i * variation[0], i * variation[1], square);
+                if (validateSquare) {
+                    if (validateMove(validateSquare, turn, ACTIONS.V)) {
+                        const piece = board[validateSquare][0];
+                        if (!piece) {
+                            tempCheckSquares.push(validateSquare);
+                            continue;
+                        }
+                        const pieceAndColor = piece.split("_");
+                        if (
+                            (pieceAndColor[0] === "queen" || pieceAndColor[0] === "bishop") &&
+                            pieceAndColor[1] !== turn
+                        ) {
+                            tempCheckSquares.push(validateSquare);
+                            checkSquares.push(tempCheckSquares);
+                            setIsCheck(true);
+                            breakCycle = true;
+                            break;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        variations = [
+            [-1, 2],
+            [1, 2],
+            [-2, -1],
+            [-2, 1],
+            [2, 1],
+            [2, -1],
+            [-1, -2],
+            [1, -2],
+        ];
+        for (const variation of variations) {
+            const validateSquare = getAnotherSquare(variation[0], variation[1], square);
+            if (validateSquare) {
+                if (validateMove(validateSquare, turn, ACTIONS.V)) {
+                    const piece = board[validateSquare][0];
+                    if (!piece) {
+                        continue;
+                    }
+                    const pieceAndColor = piece.split("_");
+                    if (pieceAndColor[0] === "knight" && pieceAndColor[1] !== turn) {
+                        checkSquares.push([validateSquare]);
+                        setIsCheck(true);
+                        break;
+                    }
+                }
+            }
+        }
+        let sumRow = turn === TURNS.W ? 1 : -1;
+        variations = [-1, 1];
+        for (const variation of variations) {
+            const validateSquare = getAnotherSquare(variation, sumRow, square);
+            if (validateSquare) {
+                if (validateMove(validateSquare, turn, ACTIONS.V)) {
+                    const piece = board[validateSquare][0];
+                    if (!piece) {
+                        continue;
+                    }
+                    const pieceAndColor = piece.split("_");
+                    if (pieceAndColor[0] === "pawn") {
+                        checkSquares.push([validateSquare]);
+                        setIsCheck(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     function validateHorizontalPin(pieceAndColor, square) {
         let i = 1;
         let sum = 1;
