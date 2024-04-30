@@ -818,7 +818,6 @@ function Board() {
                 } else {
                     break;
                 }
-                break;
             }
         }
         return pin;
@@ -865,7 +864,6 @@ function Board() {
                 } else {
                     break;
                 }
-                break;
             }
         }
         return pin;
@@ -912,7 +910,6 @@ function Board() {
                 } else {
                     break;
                 }
-                break;
             }
         }
         return pin;
@@ -959,7 +956,6 @@ function Board() {
                 } else {
                     break;
                 }
-                break;
             }
         }
         return pin;
