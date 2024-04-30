@@ -428,69 +428,61 @@ function Board() {
         let movements = [];
         for (let i = -1; i >= -4; i--) {
             const validateSquare = getAnotherSquare(i, 0, square);
-            if (validateSquare) {
-                const childrens = document.getElementById(validateSquare).children;
-                if (childrens.length > 0) {
-                    if (i !== -4) {
-                        break;
-                    } else {
-                        const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
-                        if (
-                            pieceAndColorChildren[0] === "rook" &&
-                            pieceAndColorChildren[1] === pieceAndColor[1]
-                        ) {
-                            let castlingSquare = getAnotherSquare(-2, 0, square);
-                            movements.push(castlingSquare);
-                            customMoves.push(["queensideCastling", castlingSquare]);
-                        }
-                    }
-                } else if (i === -1) {
-                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
-                        break;
-                    }
-                    movements.push(validateSquare);
-                } else {
-                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
-                        break;
-                    }
-                }
-                if (kingMoved[index]) break;
-            } else {
+            if (!validateSquare) {
                 break;
             }
+            const childrens = document.getElementById(validateSquare).children;
+            if (childrens.length > 0) {
+                if (i !== -4) {
+                    break;
+                }
+                const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
+                if (
+                    pieceAndColorChildren[0] === "rook" &&
+                    pieceAndColorChildren[1] === pieceAndColor[1]
+                ) {
+                    let castlingSquare = getAnotherSquare(-2, 0, square);
+                    movements.push(castlingSquare);
+                    customMoves.push(["queensideCastling", castlingSquare]);
+                }
+            } else {
+                if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                    break;
+                }
+                if (i === -1) {
+                    movements.push(validateSquare);
+                }
+            }
+            if (kingMoved[index]) break;
         }
         for (let i = 1; i <= 3; i++) {
             const validateSquare = getAnotherSquare(i, 0, square);
-            if (validateSquare) {
-                const childrens = document.getElementById(validateSquare).children;
-                if (childrens.length > 0) {
-                    if (i !== 3) {
-                        break;
-                    } else {
-                        const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
-                        if (
-                            pieceAndColorChildren[0] === "rook" &&
-                            pieceAndColorChildren[1] === pieceAndColor[1]
-                        ) {
-                            let castlingSquare = getAnotherSquare(2, 0, square);
-                            movements.push(castlingSquare);
-                            customMoves.push(["kingsideCastling", castlingSquare]);
-                        }
-                    }
-                } else if (i === 1) {
-                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
-                        break;
-                    }
-                    movements.push(validateSquare);
-                } else {
-                    if (validateProtectedSquare(validateSquare, pieceAndColor)) {
-                        break;
-                    }
-                }
-                if (kingMoved[index]) break;
-            } else {
+            if (!validateSquare) {
                 break;
             }
+            const childrens = document.getElementById(validateSquare).children;
+            if (childrens.length > 0) {
+                if (i !== 3) {
+                    break;
+                }
+                const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
+                if (
+                    pieceAndColorChildren[0] === "rook" &&
+                    pieceAndColorChildren[1] === pieceAndColor[1]
+                ) {
+                    let castlingSquare = getAnotherSquare(2, 0, square);
+                    movements.push(castlingSquare);
+                    customMoves.push(["kingsideCastling", castlingSquare]);
+                }
+            } else {
+                if (validateProtectedSquare(validateSquare, pieceAndColor)) {
+                    break;
+                }
+                if (i === 1) {
+                    movements.push(validateSquare);
+                }
+            }
+            if (kingMoved[index]) break;
         }
         return movements;
     }
