@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/board.css";
 import Square from "./square";
 
@@ -102,6 +102,10 @@ function Board() {
         h1: ["rook_w", "white"],
     });
     let blockedForward = false;
+    const [isCheck, setIsCheck] = useState(false);
+    useEffect(() => {
+        validatePossibleCheck();
+    }, [turn]);
 
     function clickSquare(e) {
         const element = e.target;
