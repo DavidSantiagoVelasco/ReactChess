@@ -815,6 +815,8 @@ function Board() {
                     }
                     found = true;
                     (i = -1), (sum = -1);
+                } else {
+                    break;
                 }
                 break;
             }
@@ -860,6 +862,8 @@ function Board() {
                     }
                     found = true;
                     (i = -1), (sum = -1);
+                } else {
+                    break;
                 }
                 break;
             }
@@ -905,6 +909,8 @@ function Board() {
                     }
                     found = true;
                     (i = -1), (sum = -1);
+                } else {
+                    break;
                 }
                 break;
             }
@@ -950,6 +956,8 @@ function Board() {
                     }
                     found = true;
                     (i = -1), (sum = -1);
+                } else {
+                    break;
                 }
                 break;
             }
