@@ -101,7 +101,6 @@ function Board() {
         g1: ["knight_w", "black"],
         h1: ["rook_w", "white"],
     });
-    let blockedForward = false;
     const [isCheck, setIsCheck] = useState(false);
     useEffect(() => {
         validatePossibleCheck();
@@ -321,32 +320,33 @@ function Board() {
                             i * variation[1],
                             square
                         );
-                        if (validateSquare) {
-                            if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                if (validateHorizontalPin(pieceAndColor, square)) break;
-                                if (validateVerticalPin(pieceAndColor, square)) break;
-                                if (
-                                    (variation[0] === -1 && variation[1] === -1) ||
-                                    (variation[0] === 1 && variation[1] === 1)
-                                ) {
-                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                                } else {
-                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
-                                }
-                                if (isCheck) {
-                                    for (const square of checkSquares[0]) {
-                                        if (validateSquare === square) {
-                                            movements.push(validateSquare);
-                                        }
-                                    }
-                                } else {
+                        if (!validateSquare) {
+                            break;
+                        }
+                        if (!validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                            break;
+                        }
+                        if (validateHorizontalPin(pieceAndColor, square)) break;
+                        if (validateVerticalPin(pieceAndColor, square)) break;
+                        if (
+                            (variation[0] === -1 && variation[1] === -1) ||
+                            (variation[0] === 1 && variation[1] === 1)
+                        ) {
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                        } else {
+                            if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                        }
+                        if (isCheck) {
+                            for (const square of checkSquares[0]) {
+                                if (validateSquare === square) {
                                     movements.push(validateSquare);
                                 }
-                            } else {
-                                break;
                             }
                         } else {
-                            blockedForward = false;
+                            movements.push(validateSquare);
+                        }
+                        const childrens = document.getElementById(validateSquare).children;
+                        if (childrens.length > 0) {
                             break;
                         }
                     }
@@ -370,48 +370,49 @@ function Board() {
                             i * variation[1],
                             square
                         );
-                        if (validateSquare) {
-                            if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                if (
-                                    (variation[0] === 0 && variation[1] === 1) ||
-                                    (variation[0] === 0 && variation[1] === -1)
-                                ) {
-                                    if (validateHorizontalPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                                } else if (
-                                    (variation[0] === 1 && variation[1] === 0) ||
-                                    (variation[0] === -1 && variation[1] === 0)
-                                ) {
-                                    if (validateVerticalPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                                } else if (
-                                    (variation[0] === -1 && variation[1] === -1) ||
-                                    (variation[0] === 1 && variation[1] === 1)
-                                ) {
-                                    if (validateHorizontalPin(pieceAndColor, square)) break;
-                                    if (validateVerticalPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                                } else {
-                                    if (validateHorizontalPin(pieceAndColor, square)) break;
-                                    if (validateVerticalPin(pieceAndColor, square)) break;
-                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
-                                }
-                                if (isCheck) {
-                                    for (const square of checkSquares[0]) {
-                                        if (validateSquare === square) {
-                                            movements.push(validateSquare);
-                                        }
-                                    }
-                                } else {
+                        if (!validateSquare) {
+                            break;
+                        }
+                        if (!validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                            break;
+                        }
+                        if (
+                            (variation[0] === 0 && variation[1] === 1) ||
+                            (variation[0] === 0 && variation[1] === -1)
+                        ) {
+                            if (validateHorizontalPin(pieceAndColor, square)) break;
+                            if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                        } else if (
+                            (variation[0] === 1 && variation[1] === 0) ||
+                            (variation[0] === -1 && variation[1] === 0)
+                        ) {
+                            if (validateVerticalPin(pieceAndColor, square)) break;
+                            if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                        } else if (
+                            (variation[0] === -1 && variation[1] === -1) ||
+                            (variation[0] === 1 && variation[1] === 1)
+                        ) {
+                            if (validateHorizontalPin(pieceAndColor, square)) break;
+                            if (validateVerticalPin(pieceAndColor, square)) break;
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                        } else {
+                            if (validateHorizontalPin(pieceAndColor, square)) break;
+                            if (validateVerticalPin(pieceAndColor, square)) break;
+                            if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                        }
+                        if (isCheck) {
+                            for (const square of checkSquares[0]) {
+                                if (validateSquare === square) {
                                     movements.push(validateSquare);
                                 }
-                            } else {
-                                break;
                             }
                         } else {
-                            blockedForward = false;
+                            movements.push(validateSquare);
+                        }
+                        const childrens = document.getElementById(validateSquare).children;
+                        if (childrens.length > 0) {
                             break;
                         }
                     }
@@ -431,32 +432,33 @@ function Board() {
                             i * variation[1],
                             square
                         );
-                        if (validateSquare) {
-                            if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                if (validateDiagonalRightPin(pieceAndColor, square)) break;
-                                if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                                if (
-                                    (variation[0] === 0 && variation[1] === 1) ||
-                                    (variation[0] === 0 && variation[1] === -1)
-                                ) {
-                                    if (validateHorizontalPin(pieceAndColor, square)) break;
-                                } else {
-                                    if (validateVerticalPin(pieceAndColor, square)) break;
-                                }
-                                if (isCheck) {
-                                    for (const square of checkSquares[0]) {
-                                        if (validateSquare === square) {
-                                            movements.push(validateSquare);
-                                        }
-                                    }
-                                } else {
+                        if (!validateSquare) {
+                            break;
+                        }
+                        if (!validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                            break;
+                        }
+                        if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                        if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                        if (
+                            (variation[0] === 0 && variation[1] === 1) ||
+                            (variation[0] === 0 && variation[1] === -1)
+                        ) {
+                            if (validateHorizontalPin(pieceAndColor, square)) break;
+                        } else {
+                            if (validateVerticalPin(pieceAndColor, square)) break;
+                        }
+                        if (isCheck) {
+                            for (const square of checkSquares[0]) {
+                                if (validateSquare === square) {
                                     movements.push(validateSquare);
                                 }
-                            } else {
-                                break;
                             }
                         } else {
-                            blockedForward = false;
+                            movements.push(validateSquare);
+                        }
+                        const childrens = document.getElementById(validateSquare).children;
+                        if (childrens.length > 0) {
                             break;
                         }
                     }
@@ -479,8 +481,6 @@ function Board() {
                                 movements.push(validateSquare);
                             }
                         }
-                    } else {
-                        blockedForward = false;
                     }
                 }
                 let horizontalMovements = findHorizontalMovesKing(pieceAndColor, square);
@@ -515,13 +515,8 @@ function Board() {
                 }
                 break;
             case "forward":
-                if (blockedForward) {
-                    blockedForward = false;
-                    return false;
-                }
                 if (childrens.length > 0) {
                     if (pieceAndColor[1] !== color) {
-                        blockedForward = true;
                         return true;
                     } else {
                         return false;
@@ -787,7 +782,6 @@ function Board() {
                         break;
                     }
                 } else {
-                    blockedForward = false;
                     break;
                 }
             }
