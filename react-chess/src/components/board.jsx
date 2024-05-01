@@ -269,6 +269,10 @@ function Board() {
                     validateSquare = getAnotherSquare(variation[0], variation[1], square);
                     if (validateSquare) {
                         if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.M)) {
+                            if (validateHorizontalPin(pieceAndColor, square)) break;
+                            if (validateVerticalPin(pieceAndColor, square)) break;
+                            if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                            if (validateDiagonalLeftPin(pieceAndColor, square)) break;
                             movements.push(validateSquare);
                         }
                     }
