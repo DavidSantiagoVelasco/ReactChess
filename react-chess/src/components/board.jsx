@@ -335,14 +335,30 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                if (validateHorizontalPin(pieceAndColor, square)) break;
-                                if (validateVerticalPin(pieceAndColor, square)) break;
                                 if (
+                                    (variation[0] === 0 && variation[1] === 1) ||
+                                    (variation[0] === 0 && variation[1] === -1)
+                                ) {
+                                    if (validateHorizontalPin(pieceAndColor, square)) break;
+                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                                } else if (
+                                    (variation[0] === 1 && variation[1] === 0) ||
+                                    (variation[0] === -1 && variation[1] === 0)
+                                ) {
+                                    if (validateVerticalPin(pieceAndColor, square)) break;
+                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                                } else if (
                                     (variation[0] === -1 && variation[1] === -1) ||
                                     (variation[0] === 1 && variation[1] === 1)
                                 ) {
+                                    if (validateHorizontalPin(pieceAndColor, square)) break;
+                                    if (validateVerticalPin(pieceAndColor, square)) break;
                                     if (validateDiagonalLeftPin(pieceAndColor, square)) break;
                                 } else {
+                                    if (validateHorizontalPin(pieceAndColor, square)) break;
+                                    if (validateVerticalPin(pieceAndColor, square)) break;
                                     if (validateDiagonalRightPin(pieceAndColor, square)) break;
                                 }
                                 movements.push(validateSquare);
@@ -375,7 +391,8 @@ function Board() {
                                 if (validateDiagonalRightPin(pieceAndColor, square)) break;
                                 if (validateDiagonalLeftPin(pieceAndColor, square)) break;
                                 if (
-                                    (variation[0] === -1 && variation[1] === -1) ||
+                                    (variation[0] === 0 && variation[1] === 1) ||
+                                    (variation[0] === 0 && variation[1] === -1)
                                 ) {
                                     if (validateHorizontalPin(pieceAndColor, square)) break;
                                 } else {
