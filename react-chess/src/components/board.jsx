@@ -205,6 +205,11 @@ function Board() {
         let validateSquare = square;
         let variations;
         let movements = [];
+        if (isCheck) {
+            if (checkSquares.length > 1 && pieceAndColor[0] !== "king") {
+                return movements;
+            }
+        }
         switch (pieceAndColor[0]) {
             case "pawn":
                 let whiteOrBlack = pieceAndColor[1] === "w" ? 1 : -1;
@@ -233,7 +238,15 @@ function Board() {
                                 continue;
                             }
                         }
-                        movements.push(validateSquare);
+                        if (isCheck) {
+                            for (const square of checkSquares[0]) {
+                                if (validateSquare === square) {
+                                    movements.push(validateSquare);
+                                }
+                            }
+                        } else {
+                            movements.push(validateSquare);
+                        }
                     }
                 }
                 let increase =
@@ -250,7 +263,15 @@ function Board() {
                     if (validateHorizontalPin(pieceAndColor, square)) break;
                     if (validateDiagonalRightPin(pieceAndColor, square)) break;
                     if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                    movements.push(validateSquare);
+                    if (isCheck) {
+                        for (const square of checkSquares[0]) {
+                            if (validateSquare === square) {
+                                movements.push(validateSquare);
+                            }
+                        }
+                    } else {
+                        movements.push(validateSquare);
+                    }
                 }
                 validatePossiblePassant(square);
                 break;
@@ -273,7 +294,15 @@ function Board() {
                             if (validateVerticalPin(pieceAndColor, square)) break;
                             if (validateDiagonalRightPin(pieceAndColor, square)) break;
                             if (validateDiagonalLeftPin(pieceAndColor, square)) break;
-                            movements.push(validateSquare);
+                            if (isCheck) {
+                                for (const square of checkSquares[0]) {
+                                    if (validateSquare === square) {
+                                        movements.push(validateSquare);
+                                    }
+                                }
+                            } else {
+                                movements.push(validateSquare);
+                            }
                         }
                     }
                 }
@@ -304,7 +333,15 @@ function Board() {
                                 } else {
                                     if (validateDiagonalRightPin(pieceAndColor, square)) break;
                                 }
-                                movements.push(validateSquare);
+                                if (isCheck) {
+                                    for (const square of checkSquares[0]) {
+                                        if (validateSquare === square) {
+                                            movements.push(validateSquare);
+                                        }
+                                    }
+                                } else {
+                                    movements.push(validateSquare);
+                                }
                             } else {
                                 break;
                             }
@@ -361,7 +398,15 @@ function Board() {
                                     if (validateVerticalPin(pieceAndColor, square)) break;
                                     if (validateDiagonalRightPin(pieceAndColor, square)) break;
                                 }
-                                movements.push(validateSquare);
+                                if (isCheck) {
+                                    for (const square of checkSquares[0]) {
+                                        if (validateSquare === square) {
+                                            movements.push(validateSquare);
+                                        }
+                                    }
+                                } else {
+                                    movements.push(validateSquare);
+                                }
                             } else {
                                 break;
                             }
@@ -398,7 +443,15 @@ function Board() {
                                 } else {
                                     if (validateVerticalPin(pieceAndColor, square)) break;
                                 }
-                                movements.push(validateSquare);
+                                if (isCheck) {
+                                    for (const square of checkSquares[0]) {
+                                        if (validateSquare === square) {
+                                            movements.push(validateSquare);
+                                        }
+                                    }
+                                } else {
+                                    movements.push(validateSquare);
+                                }
                             } else {
                                 break;
                             }
