@@ -325,6 +325,16 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
+                                if (validateHorizontalPin(pieceAndColor, square)) break;
+                                if (validateVerticalPin(pieceAndColor, square)) break;
+                                if (
+                                    (variation[0] === -1 && variation[1] === -1) ||
+                                    (variation[0] === 1 && variation[1] === 1)
+                                ) {
+                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                                } else {
+                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                                }
                                 movements.push(validateSquare);
                             } else {
                                 break;
@@ -352,15 +362,14 @@ function Board() {
                         );
                         if (validateSquare) {
                             if (validateMove(validateSquare, pieceAndColor[1], ACTIONS.F)) {
-                                if (validateHorizontalPin(pieceAndColor, square)) break;
-                                if (validateVerticalPin(pieceAndColor, square)) break;
+                                if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                                if (validateDiagonalLeftPin(pieceAndColor, square)) break;
                                 if (
                                     (variation[0] === -1 && variation[1] === -1) ||
-                                    (variation[0] === 1 && variation[1] === 1)
                                 ) {
-                                    if (validateDiagonalLeftPin(pieceAndColor, square)) break;
+                                    if (validateHorizontalPin(pieceAndColor, square)) break;
                                 } else {
-                                    if (validateDiagonalRightPin(pieceAndColor, square)) break;
+                                    if (validateVerticalPin(pieceAndColor, square)) break;
                                 }
                                 movements.push(validateSquare);
                             } else {
