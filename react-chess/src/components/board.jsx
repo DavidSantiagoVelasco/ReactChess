@@ -105,6 +105,53 @@ function Board() {
     useEffect(() => {
         validatePossibleCheck();
     }, [turn]);
+    useEffect(() => {
+        let isCheckmate = checkSquares.length > 0 ? true : false;
+        if (!isCheckmate) {
+            return;
+        }
+        let onlyKingMoves = checkSquares.length > 1 ? true : false;
+        for (const key in board) {
+            const piece = board[key];
+            if (!piece[0]) {
+                continue;
+            }
+            const pieceAndColor = piece[0].split("_");
+            if (pieceAndColor[1] !== turn) {
+                continue;
+            }
+            if (!onlyKingMoves) {
+                const movements = findMoves(pieceAndColor, key);
+                let breakCycle = false;
+                for (const square of checkSquares[0]) {
+                    if (breakCycle) {
+                        break;
+                    }
+                    for (const move of movements) {
+                        if (move === square) {
+                            isCheckmate = false;
+                            breakCycle = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isCheckmate) {
+                    break;
+                }
+            } else {
+                if (pieceAndColor[0] !== "king") {
+                    continue;
+                }
+                const movements = findMoves(pieceAndColor, key);
+                if (movements.length > 0) {
+                    isCheckmate = false;
+                }
+            }
+        }
+        if (isCheckmate) {
+            console.log("checkmate");
+        }
+    }, [isCheck]);
 
     function clickSquare(e) {
         const element = e.target;
@@ -115,6 +162,10 @@ function Board() {
         const id = parent.id;
         if (element.classList.contains("possibleMovement")) {
             move(element.id);
+            if (isCheck) {
+                checkSquares = [];
+                setIsCheck(false);
+            }
         }
         for (let i = 0; i < possibleMovements.length; i++) {
             document.getElementById(possibleMovements[i]).classList.remove("possibleMovement");
