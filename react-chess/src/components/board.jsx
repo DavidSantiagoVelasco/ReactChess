@@ -29,6 +29,10 @@ const ACTIONS = {
 let customMoves = [];
 let possiblePassant = null;
 let kingMoved = [false, false];
+let rooksMoved = [
+    [false, false],
+    [false, false],
+];
 let checkSquares = [];
 
 function Board() {
@@ -215,6 +219,25 @@ function Board() {
                 }
             }
             pieceAndColor[1] === "w" ? (kingMoved[0] = true) : (kingMoved[1] = true);
+        }
+        if (pieceAndColor[0] === "rook") {
+            if (selectedSquare === "a1") {
+                if (!rooksMoved[0][0]) {
+                    rooksMoved[0][0] = true;
+                }
+            } else if (selectedSquare === "h1") {
+                if (!rooksMoved[0][1]) {
+                    rooksMoved[0][1] = true;
+                }
+            } else if (selectedSquare === "a8") {
+                if (!rooksMoved[1][0]) {
+                    rooksMoved[1][0] = true;
+                }
+            } else if (selectedSquare === "h8") {
+                if (!rooksMoved[1][1]) {
+                    rooksMoved[1][1] = true;
+                }
+            }
         }
         if (pieceAndColor[0] !== "pawn") {
             possiblePassant = null;
@@ -619,6 +642,16 @@ function Board() {
                 }
             }
             if (kingMoved[index]) break;
+            if (isCheck) break;
+            if (index === 0) {
+                if (rooksMoved[0][0]) {
+                    break;
+                }
+            } else {
+                if (rooksMoved[1][0]) {
+                    break;
+                }
+            }
         }
         for (let i = 1; i <= 3; i++) {
             const validateSquare = getAnotherSquare(i, 0, square);
@@ -648,6 +681,16 @@ function Board() {
                 }
             }
             if (kingMoved[index]) break;
+            if (isCheck) break;
+            if (index === 0) {
+                if (rooksMoved[0][1]) {
+                    break;
+                }
+            } else {
+                if (rooksMoved[1][1]) {
+                    break;
+                }
+            }
         }
         return movements;
     }
