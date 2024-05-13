@@ -114,7 +114,6 @@ function Board() {
         if (!isCheckmate) {
             return;
         }
-        let onlyKingMoves = checkSquares.length > 1 ? true : false;
         for (const key in board) {
             const piece = board[key];
             if (!piece[0]) {
@@ -124,32 +123,38 @@ function Board() {
             if (pieceAndColor[1] !== turn) {
                 continue;
             }
-            if (!onlyKingMoves) {
-                const movements = findMoves(pieceAndColor, key);
-                let breakCycle = false;
-                for (const square of checkSquares[0]) {
-                    if (breakCycle) {
-                        break;
-                    }
-                    for (const move of movements) {
-                        if (move === square) {
-                            isCheckmate = false;
-                            breakCycle = true;
-                            break;
-                        }
-                    }
-                }
-                if (!isCheckmate) {
-                    break;
-                }
-            } else {
-                if (pieceAndColor[0] !== "king") {
-                    continue;
-                }
-                const movements = findMoves(pieceAndColor, key);
+            const movements = referee.findMoves(
+                pieceAndColor,
+                key,
+                isCheck,
+                checkSquares,
+                possiblePassant,
+                kingMoved,
+                rooksMoved,
+                customMoves
+            );
+            let breakCycle = false;
+            if (pieceAndColor[0] === "king") {
                 if (movements.length > 0) {
                     isCheckmate = false;
+                    breakCycle = true;
+                    break;
                 }
+            }
+            for (const square of checkSquares[0]) {
+                if (breakCycle) {
+                    break;
+                }
+                for (const move of movements) {
+                    if (move === square) {
+                        isCheckmate = false;
+                        breakCycle = true;
+                        break;
+                    }
+                }
+            }
+            if (!isCheckmate) {
+                break;
             }
         }
         if (isCheckmate) {
