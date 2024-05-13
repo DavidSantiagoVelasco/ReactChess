@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "../styles/board.css";
 import Square from "./square";
+import Referee from "../rules/Referee";
+import { getAnotherSquare } from "../rules/GeneralFunctions";
 
 const TURNS = {
     W: "w",
@@ -34,6 +36,7 @@ let rooksMoved = [
     [false, false],
 ];
 let checkSquares = [];
+const referee = new Referee();
 
 function Board() {
     const [turn, setTurn] = useState(TURNS.W);
@@ -107,7 +110,11 @@ function Board() {
     });
     const [isCheck, setIsCheck] = useState(false);
     useEffect(() => {
-        validatePossibleCheck();
+        const check = referee.validatePossibleCheck(board, turn);
+        if (check) {
+            setIsCheck(true);
+            checkSquares = referee.checkSquares;
+        }
     }, [turn]);
     useEffect(() => {
         let isCheckmate = checkSquares.length > 0 ? true : false;
@@ -194,7 +201,16 @@ function Board() {
         if (turn !== pieceAndColor[1]) {
             return;
         }
-        const movements = findMoves(pieceAndColor, square);
+        const movements = referee.findMoves(
+            pieceAndColor,
+            square,
+            isCheck,
+            checkSquares,
+            possiblePassant,
+            kingMoved,
+            rooksMoved,
+            customMoves
+        );
         for (const move of movements) {
             showSquareAsPossibleMovement(move);
         }
