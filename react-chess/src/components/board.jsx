@@ -9,25 +9,6 @@ const TURNS = {
     B: "b",
 };
 
-const COLUMNS = {
-    a: 0,
-    b: 1,
-    c: 2,
-    d: 3,
-    e: 4,
-    f: 5,
-    g: 6,
-    h: 7,
-};
-
-const ACTIONS = {
-    A: "advance",
-    C: "capture",
-    F: "forward",
-    M: "anyMoves",
-    V: "validateCheck",
-};
-
 let customMoves = [];
 let possiblePassant = null;
 let kingMoved = [false, false];
