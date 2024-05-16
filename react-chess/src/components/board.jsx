@@ -90,6 +90,7 @@ function Board() {
         h1: ["rook_w", "white"],
     });
     const [isCheck, setIsCheck] = useState(false);
+    const [checkMate, setCheckMate] = useState(false);
     useEffect(() => {
         const check = referee.validatePossibleCheck(board, turn);
         if (check) {
@@ -146,7 +147,7 @@ function Board() {
             }
         }
         if (isCheckmate) {
-            console.log("checkmate");
+            setCheckMate(true);
         }
     }, [isCheck]);
 
