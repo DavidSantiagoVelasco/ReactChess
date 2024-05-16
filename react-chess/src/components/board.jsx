@@ -3,6 +3,7 @@ import "../styles/board.css";
 import Square from "./square";
 import Referee from "../rules/Referee";
 import { getAnotherSquare } from "../rules/GeneralFunctions";
+import CheckMateModal from "./checkMateModal";
 
 const TURNS = {
     W: "w",
@@ -369,6 +370,12 @@ function Board() {
                     piece={piece[0]}
                 ></Square>
             ))}
+            {checkMate && (
+                <CheckMateModal
+                    winningTeam={turn === TURNS.W ? "black" : "white"}
+                    handlePlayAgain={resetGame}
+                />
+            )}
         </div>
     );
 }
