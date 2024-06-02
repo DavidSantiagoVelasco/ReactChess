@@ -283,6 +283,9 @@ export const validateProtectedSquare = (square, pieceAndColor) => {
             }
             const newPieceAndColor = childrens[0].classList.item(1).split("_");
             if (newPieceAndColor[1] === pieceAndColor[1]) {
+                if (newPieceAndColor[0] === "king") {
+                    continue;
+                }
                 break;
             }
             if (newPieceAndColor[0] === "king" && pieceAndColor[0] === "king" && i === 1) {
@@ -307,6 +310,9 @@ export const validateProtectedSquare = (square, pieceAndColor) => {
             }
             const newPieceAndColor = childrens[0].classList.item(1).split("_");
             if (newPieceAndColor[1] === pieceAndColor[1]) {
+                if (newPieceAndColor[0] === "king") {
+                    continue;
+                }
                 break;
             }
             if (newPieceAndColor[0] === "king" && pieceAndColor[0] === "king" && i === 1) {
