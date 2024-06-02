@@ -4,6 +4,7 @@ import Square from "./square";
 import Referee from "../rules/Referee";
 import { getAnotherSquare } from "../rules/GeneralFunctions";
 import CheckMateModal from "./checkMateModal";
+import PawnPromotionModal from "./pawnPromotionModal";
 
 const TURNS = {
     W: "w",
@@ -18,6 +19,8 @@ let rooksMoved = [
     [false, false],
 ];
 let checkSquares = [];
+let newSquarePawnPromotion = "";
+let tempPawnPromotion = false;
 const referee = new Referee();
 
 function Board() {
@@ -92,6 +95,7 @@ function Board() {
     });
     const [isCheck, setIsCheck] = useState(false);
     const [checkMate, setCheckMate] = useState(false);
+    const [pawnPromotion, setPawnPromotion] = useState(false);
     useEffect(() => {
         const check = referee.validatePossibleCheck(board, turn);
         if (check) {
@@ -153,6 +157,9 @@ function Board() {
     }, [isCheck]);
 
     function clickSquare(e) {
+        if(pawnPromotion){
+            return;
+        }
         const element = e.target;
         if (selectedSquare) {
             document.getElementById(selectedSquare).classList.remove("selected");
@@ -170,6 +177,10 @@ function Board() {
             document.getElementById(possibleMovements[i]).classList.remove("possibleMovement");
         }
         customMoves = [];
+        if(tempPawnPromotion){
+            document.getElementById(selectedSquare).classList.add("selected");
+            return;
+        }
         setSelectedSquare(id);
         if (!element.classList.contains("piece")) {
             return;
@@ -204,6 +215,7 @@ function Board() {
         const newBoard = { ...board };
         const piece = newBoard[selectedSquare][0];
         const pieceAndColor = piece.split("_");
+        tempPawnPromotion = false;
         if (pieceAndColor[0] === "king") {
             for (const moves of customMoves) {
                 if (moves[1] === newSquare) {
@@ -266,16 +278,28 @@ function Board() {
                     }
                     possiblePassant = null;
                 }
+                if (parseInt(newSquare[1]) === 8 && turn === TURNS.W) {
+                    tempPawnPromotion = true;
+                    newSquarePawnPromotion = newSquare;
+                    setPawnPromotion(tempPawnPromotion);
+                } else if (parseInt(newSquare[1]) === 1 && turn === TURNS.B) {
+                    tempPawnPromotion = true;
+                    newSquarePawnPromotion = newSquare;
+                    setPawnPromotion(tempPawnPromotion);
+                }
             } else {
                 possiblePassant = newSquare;
             }
         }
+        if (tempPawnPromotion) {
+            return;
+        }
         newBoard[newSquare][0] = piece;
         newBoard[selectedSquare][0] = null;
-
         setBoard(newBoard);
         const newTurn = turn === TURNS.W ? TURNS.B : TURNS.W;
         setTurn(newTurn);
+        setPossibleMovements([]);
     }
 
     function showSquareAsPossibleMovement(square) {
@@ -360,6 +384,22 @@ function Board() {
         setCheckMate(false);
     }
 
+    function chosenPawnPromotionOption(option) {
+        if (newSquarePawnPromotion === "") {
+            return;
+        }
+        const newBoard = { ...board };
+        newBoard[newSquarePawnPromotion][0] = option;
+        newBoard[selectedSquare][0] = null;
+        setBoard(newBoard);
+        const newTurn = turn === TURNS.W ? TURNS.B : TURNS.W;
+        setTurn(newTurn);
+        newSquarePawnPromotion = "";
+        tempPawnPromotion = false;
+        setPawnPromotion(tempPawnPromotion);
+        document.getElementById(selectedSquare).classList.remove("selected");
+    }
+
     return (
         <div onClick={(e) => clickSquare(e)} className="board">
             {Object.entries(board).map(([square, piece]) => (
@@ -375,6 +415,9 @@ function Board() {
                     winningTeam={turn === TURNS.W ? "black" : "white"}
                     handlePlayAgain={resetGame}
                 />
+            )}
+            {pawnPromotion && (
+                <PawnPromotionModal color={turn} handleChosenOption={chosenPawnPromotionOption} />
             )}
         </div>
     );
