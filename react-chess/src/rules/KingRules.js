@@ -1,6 +1,13 @@
 import * as GF from "./GeneralFunctions";
 
-export const getKingMoves = (pieceAndColor, square, isCheck, kingMoved, rooksMoved, customMoves) => {
+export const getKingMoves = (
+    pieceAndColor,
+    square,
+    isCheck,
+    kingMoved,
+    rooksMoved,
+    customMoves
+) => {
     const variations = [
         [-1, 1],
         [0, 1],
@@ -34,7 +41,14 @@ export const getKingMoves = (pieceAndColor, square, isCheck, kingMoved, rooksMov
     return movements;
 };
 
-function findHorizontalMovesKing(pieceAndColor, square, isCheck, kingMoved, rooksMoved, customMoves) {
+function findHorizontalMovesKing(
+    pieceAndColor,
+    square,
+    isCheck,
+    kingMoved,
+    rooksMoved,
+    customMoves
+) {
     let index = pieceAndColor[1] === "w" ? 0 : 1;
     let movements = [];
     for (let i = -1; i >= -4; i--) {
@@ -43,11 +57,12 @@ function findHorizontalMovesKing(pieceAndColor, square, isCheck, kingMoved, rook
             break;
         }
         const childrens = document.getElementById(validateSquare).children;
-        if (childrens.length > 0) {
+        const pieceAndColorChildren =
+            childrens.length > 0 ? childrens[0].classList.item(1).split("_") : null;
+        if (pieceAndColorChildren && pieceAndColorChildren[1] === pieceAndColor[1]) {
             if (i !== -4) {
                 break;
             }
-            const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
             if (
                 pieceAndColorChildren[0] === "rook" &&
                 pieceAndColorChildren[1] === pieceAndColor[1]
@@ -82,11 +97,11 @@ function findHorizontalMovesKing(pieceAndColor, square, isCheck, kingMoved, rook
             break;
         }
         const childrens = document.getElementById(validateSquare).children;
-        if (childrens.length > 0) {
+        const pieceAndColorChildren = childrens.length > 0 ? childrens[0].classList.item(1).split("_") : null;
+        if (pieceAndColorChildren && pieceAndColorChildren[1] === pieceAndColor[1]) {
             if (i !== 3) {
                 break;
             }
-            const pieceAndColorChildren = childrens[0].classList.item(1).split("_");
             if (
                 pieceAndColorChildren[0] === "rook" &&
                 pieceAndColorChildren[1] === pieceAndColor[1]
