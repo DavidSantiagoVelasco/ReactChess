@@ -5,6 +5,7 @@ import Referee from "../rules/Referee";
 import { getAnotherSquare } from "../rules/GeneralFunctions";
 import CheckMateModal from "./checkMateModal";
 import PawnPromotionModal from "./pawnPromotionModal";
+import PlayerComponent from "./playerComponent";
 
 const TURNS = {
     W: "w",
@@ -96,6 +97,21 @@ function Board() {
     const [isCheck, setIsCheck] = useState(false);
     const [checkMate, setCheckMate] = useState(false);
     const [pawnPromotion, setPawnPromotion] = useState(false);
+
+    const [blackPawnsCapturedCont, setBlackPawnsCapturedCont] = useState(0);
+    const [blackBishopsCapturedCont, setBlackBishopsCapturedCont] = useState(0);
+    const [blackKnightsCapturedCont, setBlackKnightsCapturedCont] = useState(0);
+    const [blackRooksCapturedCont, setBlackRooksCapturedCont] = useState(0);
+    const [blackQueensCapturedCont, setBlackQueensCapturedCont] = useState(0);
+    const [blackScore, setBlackScore] = useState(0);
+
+    const [whitePawnsCapturedCont, setWhitePawnsCapturedCont] = useState(0);
+    const [whiteBishopsCapturedCont, setWhiteBishopsCapturedCont] = useState(0);
+    const [whiteKnightsCapturedCont, setWhiteKnightsCapturedCont] = useState(0);
+    const [whiteRooksCapturedCont, setWhiteRooksCapturedCont] = useState(0);
+    const [whiteQueensCapturedCont, setWhiteQueensCapturedCont] = useState(0);
+    const [whiteScore, setWhiteScore] = useState(0);
+
     useEffect(() => {
         const check = referee.validatePossibleCheck(board, turn);
         if (check) {
@@ -401,24 +417,47 @@ function Board() {
     }
 
     return (
-        <div onClick={(e) => clickSquare(e)} className="board">
-            {Object.entries(board).map(([square, piece]) => (
-                <Square
-                    key={square}
-                    initialPosition={square}
-                    className={"square " + piece[1]}
-                    piece={piece[0]}
-                ></Square>
-            ))}
-            {checkMate && (
-                <CheckMateModal
-                    winningTeam={turn === TURNS.W ? "black" : "white"}
-                    handlePlayAgain={resetGame}
-                />
-            )}
-            {pawnPromotion && (
-                <PawnPromotionModal color={turn} handleChosenOption={chosenPawnPromotionOption} />
-            )}
+        <div>
+            <PlayerComponent
+                color={"black"}
+                pawnsCapturedCont={whitePawnsCapturedCont}
+                bishopsCapturedCont={whiteBishopsCapturedCont}
+                knightsCapturedCont={whiteKnightsCapturedCont}
+                rooksCapturedCont={whiteRooksCapturedCont}
+                queensCapturedCont={whiteQueensCapturedCont}
+                score={blackScore}
+            />
+            <div onClick={(e) => clickSquare(e)} className="board">
+                {Object.entries(board).map(([square, piece]) => (
+                    <Square
+                        key={square}
+                        initialPosition={square}
+                        className={"square " + piece[1]}
+                        piece={piece[0]}
+                    ></Square>
+                ))}
+                {checkMate && (
+                    <CheckMateModal
+                        winningTeam={turn === TURNS.W ? "black" : "white"}
+                        handlePlayAgain={resetGame}
+                    />
+                )}
+                {pawnPromotion && (
+                    <PawnPromotionModal
+                        color={turn}
+                        handleChosenOption={chosenPawnPromotionOption}
+                    />
+                )}
+            </div>
+            <PlayerComponent
+                color={"white"}
+                pawnsCapturedCont={blackPawnsCapturedCont}
+                bishopsCapturedCont={blackBishopsCapturedCont}
+                knightsCapturedCont={blackKnightsCapturedCont}
+                rooksCapturedCont={blackRooksCapturedCont}
+                queensCapturedCont={blackQueensCapturedCont}
+                score={whiteScore}
+            />
         </div>
     );
 }
