@@ -22,6 +22,8 @@ let rooksMoved = [
 let checkSquares = [];
 let newSquarePawnPromotion = "";
 let tempPawnPromotion = false;
+let tempWhiteScore = 0;
+let tempBlackScore = 0;
 const referee = new Referee();
 
 function Board() {
@@ -173,7 +175,7 @@ function Board() {
     }, [isCheck]);
 
     function clickSquare(e) {
-        if(pawnPromotion){
+        if (pawnPromotion) {
             return;
         }
         const element = e.target;
@@ -193,7 +195,7 @@ function Board() {
             document.getElementById(possibleMovements[i]).classList.remove("possibleMovement");
         }
         customMoves = [];
-        if(tempPawnPromotion){
+        if (tempPawnPromotion) {
             document.getElementById(selectedSquare).classList.add("selected");
             return;
         }
@@ -279,16 +281,46 @@ function Board() {
                 const validateSquare1 = getAnotherSquare(-1, 0, selectedSquare);
                 const validateSquare2 = getAnotherSquare(1, 0, selectedSquare);
                 if (possiblePassant != null) {
+                    const sumRow = turn === TURNS.W ? 1 : -1;
                     if (validateSquare1 === possiblePassant) {
-                        const sumRow = turn === TURNS.W ? 1 : -1;
                         const validateNewSquare = getAnotherSquare(0, sumRow, validateSquare1);
                         if (validateNewSquare === newSquare) {
+                            if (sumRow === 1) {
+                                const tempPawnCont = blackPawnsCapturedCont + 1;
+                                tempWhiteScore += 1;
+                                tempBlackScore -= 1;
+                                setBlackPawnsCapturedCont(tempPawnCont);
+                                setWhiteScore(tempWhiteScore);
+                                setBlackScore(tempBlackScore);
+                            } else {
+                                const tempPawnCont = whitePawnsCapturedCont + 1;
+                                tempWhiteScore -= 1;
+                                tempBlackScore += 1;
+                                setWhitePawnsCapturedCont(tempPawnCont);
+                                setWhiteScore(tempWhiteScore);
+                                setBlackScore(tempBlackScore);
+                            }
                             newBoard[validateSquare1][0] = null;
                         }
                     } else if (validateSquare2 === possiblePassant) {
                         const sumRow = turn === TURNS.W ? 1 : -1;
                         const validateNewSquare = getAnotherSquare(0, sumRow, validateSquare2);
                         if (validateNewSquare === newSquare) {
+                            if (sumRow === 1) {
+                                const tempPawnCont = blackPawnsCapturedCont + 1;
+                                tempWhiteScore += 1;
+                                tempBlackScore -= 1;
+                                setBlackPawnsCapturedCont(tempPawnCont);
+                                setWhiteScore(tempWhiteScore);
+                                setBlackScore(tempBlackScore);
+                            } else {
+                                const tempPawnCont = whitePawnsCapturedCont + 1;
+                                tempWhiteScore -= 1;
+                                tempBlackScore += 1;
+                                setWhitePawnsCapturedCont(tempPawnCont);
+                                setWhiteScore(tempWhiteScore);
+                                setBlackScore(tempBlackScore);
+                            }
                             newBoard[validateSquare2][0] = null;
                         }
                     }
@@ -310,6 +342,8 @@ function Board() {
         if (tempPawnPromotion) {
             return;
         }
+        const tempPieceNewSquare = newBoard[newSquare][0];
+        calculateScoreAndCapturedPieces(tempPieceNewSquare, false);
         newBoard[newSquare][0] = piece;
         newBoard[selectedSquare][0] = null;
         setBoard(newBoard);
@@ -405,6 +439,8 @@ function Board() {
             return;
         }
         const newBoard = { ...board };
+        const tempPieceNewSquare = newBoard[newSquarePawnPromotion][0];
+        calculateScoreAndCapturedPieces(tempPieceNewSquare, false);
         newBoard[newSquarePawnPromotion][0] = option;
         newBoard[selectedSquare][0] = null;
         setBoard(newBoard);
@@ -414,6 +450,110 @@ function Board() {
         tempPawnPromotion = false;
         setPawnPromotion(tempPawnPromotion);
         document.getElementById(selectedSquare).classList.remove("selected");
+    }
+
+    function calculateScoreAndCapturedPieces(tempPieceNewSquare, pawnPromotion) {
+        let tempCont = 0;
+        switch (tempPieceNewSquare) {
+            case "pawn_b":
+                tempCont = blackPawnsCapturedCont + 1;
+                tempWhiteScore += 1;
+                tempBlackScore -= 1;
+                setBlackPawnsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "pawn_w":
+                tempCont = whitePawnsCapturedCont + 1;
+                tempWhiteScore -= 1;
+                tempBlackScore += 1;
+                setWhitePawnsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "bishop_b":
+                tempCont =
+                    pawnPromotion === true
+                        ? blackBishopsCapturedCont
+                        : blackBishopsCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore - 2 : tempWhiteScore + 3;
+                tempBlackScore = pawnPromotion ? tempBlackScore + 2 : tempBlackScore - 3;
+                setBlackBishopsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "bishop_w":
+                tempCont =
+                    pawnPromotion === true
+                        ? whiteBishopsCapturedCont
+                        : whiteBishopsCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore + 2 : tempWhiteScore - 3;
+                tempBlackScore = pawnPromotion ? tempBlackScore - 2 : tempBlackScore + 3;
+                setWhiteBishopsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "knight_b":
+                tempCont =
+                    pawnPromotion === true
+                        ? blackKnightsCapturedCont
+                        : blackKnightsCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore - 2 : tempWhiteScore + 3;
+                tempBlackScore = pawnPromotion ? tempBlackScore + 2 : tempBlackScore - 3;
+                setBlackKnightsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "knight_w":
+                tempCont =
+                    pawnPromotion === true
+                        ? whiteBishopsCapturedCont
+                        : whiteKnightsCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore + 2 : tempWhiteScore - 3;
+                tempBlackScore = pawnPromotion ? tempBlackScore - 2 : tempBlackScore + 3;
+                setWhiteKnightsCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "rook_b":
+                tempCont =
+                    pawnPromotion === true ? blackRooksCapturedCont : blackRooksCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore - 4 : tempWhiteScore + 5;
+                tempBlackScore = pawnPromotion ? tempBlackScore + 4 : tempBlackScore - 5;
+                setBlackRooksCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "rook_w":
+                tempCont =
+                    pawnPromotion === true ? whiteRooksCapturedCont : whiteRooksCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore + 4 : tempWhiteScore - 5;
+                tempBlackScore = pawnPromotion ? tempBlackScore - 4 : tempBlackScore + 5;
+                setWhiteRooksCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "queen_b":
+                tempCont =
+                    pawnPromotion === true ? blackQueensCapturedCont : blackQueensCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore - 8 : tempWhiteScore + 9;
+                tempBlackScore = pawnPromotion ? tempBlackScore + 8 : tempBlackScore - 9;
+                setBlackQueensCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            case "queen_w":
+                tempCont =
+                    pawnPromotion === true ? whiteQueensCapturedCont : whiteQueensCapturedCont + 1;
+                tempWhiteScore = pawnPromotion ? tempWhiteScore + 8 : tempWhiteScore - 9;
+                tempBlackScore = pawnPromotion ? tempBlackScore - 8 : tempBlackScore + 9;
+                setWhiteQueensCapturedCont(tempCont);
+                setWhiteScore(tempWhiteScore);
+                setBlackScore(tempBlackScore);
+                break;
+            default:
+                break;
+        }
     }
 
     return (
