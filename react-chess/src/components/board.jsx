@@ -303,7 +303,6 @@ function Board() {
                             newBoard[validateSquare1][0] = null;
                         }
                     } else if (validateSquare2 === possiblePassant) {
-                        const sumRow = turn === TURNS.W ? 1 : -1;
                         const validateNewSquare = getAnotherSquare(0, sumRow, validateSquare2);
                         if (validateNewSquare === newSquare) {
                             if (sumRow === 1) {
@@ -432,6 +431,22 @@ function Board() {
         checkSquares = [];
         setIsCheck(false);
         setCheckMate(false);
+
+        setBlackPawnsCapturedCont(0);
+        setBlackBishopsCapturedCont(0);
+        setBlackKnightsCapturedCont(0);
+        setBlackRooksCapturedCont(0);
+        setBlackQueensCapturedCont(0);
+        setBlackScore(0);
+        tempBlackScore = 0;
+
+        setWhitePawnsCapturedCont(0);
+        setWhiteBishopsCapturedCont(0);
+        setWhiteKnightsCapturedCont(0);
+        setWhiteRooksCapturedCont(0);
+        setWhiteQueensCapturedCont(0);
+        setWhiteScore(0);
+        tempWhiteScore = 0;
     }
 
     function chosenPawnPromotionOption(option) {
@@ -449,6 +464,7 @@ function Board() {
         newSquarePawnPromotion = "";
         tempPawnPromotion = false;
         setPawnPromotion(tempPawnPromotion);
+        calculateScoreAndCapturedPieces(option, true);
         document.getElementById(selectedSquare).classList.remove("selected");
     }
 
